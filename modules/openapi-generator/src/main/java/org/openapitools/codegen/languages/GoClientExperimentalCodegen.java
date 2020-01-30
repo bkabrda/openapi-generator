@@ -24,6 +24,8 @@ import org.openapitools.codegen.meta.Stability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ public class GoClientExperimentalCodegen extends GoClientCodegen {
         embeddedTemplateDir = templateDir = "go-experimental";
 
         usesOptionals = false;
+        useOneOfInterfaces = true;
 
         generatorMetadata = GeneratorMetadata.newBuilder(generatorMetadata).stability(Stability.EXPERIMENTAL).build();
     }
@@ -50,6 +53,11 @@ public class GoClientExperimentalCodegen extends GoClientCodegen {
     @Override
     public String getName() {
         return "go-experimental";
+    }
+
+    @Override
+    public String toGetter(String name) {
+        return "Get" + getterAndSetterCapitalize(name);
     }
 
     /**
@@ -94,5 +102,17 @@ public class GoClientExperimentalCodegen extends GoClientCodegen {
         }
 
         return objs;
+    }
+
+    @Override
+    public void addImportsToOneOfInterface(List<Map<String, String>> imports) {
+        for (String i : Arrays.asList("fmt")) {
+            Map<String, String> oneImport = new HashMap<String, String>() {{
+                put("import", i);
+            }};
+            if (!imports.contains(oneImport)) {
+                imports.add(oneImport);
+            }
+        }
     }
 }
