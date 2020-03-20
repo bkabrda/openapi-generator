@@ -4,7 +4,9 @@ package {{packageName}}
 {{#operations}}
 import (
 	_context "context"
+	_fmt "fmt"
 	_ioutil "io/ioutil"
+	_log "log"
 	_nethttp "net/http"
 	_neturl "net/url"
 {{#imports}}	"{{import}}"
@@ -62,6 +64,14 @@ func (r api{{operationId}}Request) Execute() ({{#returnType}}{{{.}}}, {{/returnT
 		localVarFileBytes    []byte
 		{{#returnType}}localVarReturnValue  {{{.}}}{{/returnType}}
 	)
+	{{#vendorExtensions.x-unstable}}
+	operationId := "{{operationId}}"
+	if r.apiService.client.cfg.IsUnstableOperationEnabled(operationId) {
+		_log.Printf("WARNING: Using unstable operation '%s'", operationId);
+	} else {
+		return {{#returnType}} localVarReturnValue, {{/returnType}}nil, GenericOpenAPIError{error: _fmt.Sprintf("Unstable operation '%s' is disabled", operationId)}
+	}
+	{{/vendorExtensions.x-unstable}}
 
 	localBasePath, err := r.apiService.client.cfg.ServerURLWithContext(r.ctx, "{{{classname}}}Service.{{{nickname}}}")
 	if err != nil {
